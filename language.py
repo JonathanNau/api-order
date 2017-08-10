@@ -1,0 +1,1 @@
+categorias = LanguageTool.rules()
