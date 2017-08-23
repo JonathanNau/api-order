@@ -3,8 +3,13 @@ from django.conf.urls import url
 from portfolios.views import UsuarioListView, UsuarioView, LojaUsuarioListView, RecebimentoListView, CategoriaListView, ProdutoListView, PedidoListView, ItemPedidoListView
 from portfolios.views import LojaListView, LojaView, LojaUsuarioView, RecebimentoView, CategoriaView, ProdutoView, PedidoView, ItemPedidoView
 
+from portfolios.views import UsuarioAdd
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import verify_jwt_token
+
 helper_patterns = [
     url(r'^usuarios/$', UsuarioListView.as_view(), name='usuarios'),
+    url(r'^usuarios/add/', UsuarioAdd.as_view(), name='usuarios_add'),
     url(r'^usuarios/(?P<pk>[0-9]+)/$', UsuarioView.as_view(), name='get_usuario'),
     url(r'^lojas/$', LojaListView.as_view(), name='lojas'),
     url(r'^lojas/(?P<pk>[0-9]+)/$', LojaView.as_view(), name='get_lojas'),
@@ -19,7 +24,9 @@ helper_patterns = [
     url(r'^pedido/$', PedidoListView.as_view(), name='pedido'),
     url(r'^pedido/(?P<pk>[0-9]+)/$', PedidoView.as_view(), name='get_pedido'),
     url(r'^itempedido/$', ItemPedidoListView.as_view(), name='itempedido'),
-    url(r'^itempedido/(?P<pk>[0-9]+)/$', ItemPedidoView.as_view(), name='get_itempedido')
+    url(r'^itempedido/(?P<pk>[0-9]+)/$', ItemPedidoView.as_view(), name='get_itempedido'),
+    url(r'^auth/token/', obtain_jwt_token),
+    url(r'^api-token-verify/', verify_jwt_token),
 ]
 
 urlpatterns = helper_patterns

@@ -1,11 +1,12 @@
 from .serializer import UsuariosSerializer, LojasSerializer, LojaUsuarioSerializer, RecebimentoSerializer, CategoriaSerializer, ProdutoSerializer, PedidoSerializer, ItemPedidoSerializer
-from .models import Usuario, Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
-
+from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
+from django.contrib.auth.models import User
 #excluir depois
 from .models import DadosPessoais
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from rest_framework import status
 
@@ -20,9 +21,9 @@ def portfolio_exibir(request):
 
 class UsuarioListView(APIView):
     serializer_class = UsuariosSerializer
-
+    
     def get(self, request, format=None):
-        serializer = self.serializer_class(Usuario.objects.all(), many=True)
+        serializer = self.serializer_class(User.objects.all(), many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
@@ -33,20 +34,30 @@ class UsuarioListView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
 
+class UsuarioAdd(APIView):
+    serializer_class = UsuariosSerializer
+    permission_classes = (AllowAny,)
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
 class UsuarioView(APIView):
 
     def get(self, request, pk, format=None):
-        user = Usuario.objects.get(pk=pk)
+        user = User.objects.get(pk=pk)
         serializer = UsuariosSerializer(user)
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
-        event = Usuario.objects.get(pk=pk)
+        event = User.objects.get(pk=pk)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     def put(self, request, pk, format=None):
-        user = Usuario.objects.get(pk=pk)
+        user = User.objects.get(pk=pk)
         serializer = UsuariosSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()

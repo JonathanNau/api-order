@@ -3,8 +3,8 @@
 from rest_framework import serializers
 from .models import DadosPessoais
 
-from .models import Usuario, Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
-
+from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
+from django.contrib.auth.models import User
 
 class DadosPessoaisSerializer(serializers.ModelSerializer):
 
@@ -17,9 +17,9 @@ class DadosPessoaisSerializer(serializers.ModelSerializer):
 class UsuariosSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Usuario
+        model = User
         depth = 1
-        fields = ['id', 'nome', 'email', 'senha', 'data', 'situacao']
+        fields = ['id', 'username', 'email', 'password', 'is_active']
         
 class LojasSerializer(serializers.ModelSerializer):
 

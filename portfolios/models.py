@@ -2,6 +2,7 @@
 from django.db import models
 from django.forms import ModelForm, PasswordInput
 from django import forms
+from django.contrib.auth.models import User
 
 class DadosPessoais(models.Model):
     name = models.CharField(max_length=50, verbose_name='Nome')
@@ -26,7 +27,7 @@ class DadosPessoais(models.Model):
     class Meta:
         verbose_name = 'Dados Pessoais'
         verbose_name_plural = 'Dados Pessoais'
-
+'''
 class Usuario(models.Model):
     tipo = models.CharField(max_length=50, verbose_name='Tipo')
     nome = models.CharField(max_length=50, verbose_name='Nome')
@@ -36,7 +37,7 @@ class Usuario(models.Model):
     situacao = models.BooleanField(verbose_name='Ativo')
     def __str__(self):
         return self.nome
-    
+'''
 class Loja(models.Model):
     nome = models.CharField(max_length=100, verbose_name='Nome')
     telefone = models.IntegerField(verbose_name='Telefone')
@@ -48,7 +49,7 @@ class Loja(models.Model):
 
 class LojaUsuario(models.Model):
     loja = models.ForeignKey(Loja, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         a = str(self.usuario) + ' - ' + str(self.loja)
         return a
@@ -80,7 +81,7 @@ class Produto(models.Model):
         return a
 
 class Pedido(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     loja = models.ForeignKey(Loja, on_delete=models.CASCADE)
     recebimento = models.ForeignKey(Recebimento, on_delete=models.CASCADE)
     recebimento_valor = models.CharField(max_length=100, verbose_name='Valor')
