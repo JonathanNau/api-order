@@ -188,8 +188,7 @@ class CategoriaListView(APIView):
 class CategoriaView(APIView):
 
     def get(self, request, pk, format=None):
-        user = Categoria.objects.get(pk=pk)
-        serializer = CategoriaSerializer(user)
+        serializer = CategoriaSerializer(Categoria.objects.filter(loja=pk), many=True)
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
