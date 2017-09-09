@@ -4,6 +4,10 @@ from django.forms import ModelForm, PasswordInput
 from django import forms
 from django.contrib.auth.models import User
 
+class Tipo(models.Model):
+    user = models.OneToOneField(User, related_name='userprofile', on_delete=models.CASCADE)
+    codigo = models.IntegerField(verbose_name='Tipo')
+
 class DadosPessoais(models.Model):
     name = models.CharField(max_length=50, verbose_name='Nome')
     adress = models.CharField(max_length=100, verbose_name='Endereço')

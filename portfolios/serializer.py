@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from .models import DadosPessoais
 
-from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
+from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido, Tipo
 from django.contrib.auth.models import User
 
 class DadosPessoaisSerializer(serializers.ModelSerializer):
@@ -15,11 +15,11 @@ class DadosPessoaisSerializer(serializers.ModelSerializer):
 
 
 class UsuariosSerializer(serializers.ModelSerializer):
-
+    codigo = serializers.IntegerField(source='userprofile.codigo')
     class Meta:
         model = User
         depth = 1
-        fields = ['id', 'username', 'email', 'password', 'is_active']
+        fields = ['id', 'username', 'email', 'password', 'is_active', 'codigo']
         
 class LojasSerializer(serializers.ModelSerializer):
 
