@@ -1,9 +1,9 @@
 # coding: utf-8
 from django.conf.urls import url
-from portfolios.views import UsuarioListView, UsuarioView, LojaUsuarioListView, RecebimentoListView, CategoriaListView, ProdutoListView, PedidoListView, ItemPedidoListView
-from portfolios.views import LojaListView, LojaView, LojaUsuarioView, RecebimentoView, CategoriaView, ProdutoView, PedidoView, ItemPedidoView
+from sistema_pedidos.views import UsuarioListView, UsuarioView, LojaUsuarioListView, RecebimentoListView, CategoriaListView, ProdutoListView, PedidoListView, ItemPedidoListView
+from sistema_pedidos.views import LojaListView, LojaView, LojaUsuarioView, RecebimentoView, CategoriaView, ProdutoView, PedidoView, ItemPedidoView
 
-from portfolios.views import UsuarioAdd
+from sistema_pedidos.views import UsuarioAdd
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import verify_jwt_token
 
@@ -19,8 +19,8 @@ helper_patterns = [
     url(r'^recebimento/(?P<pk>[0-9]+)/$', RecebimentoView.as_view(), name='get_recebimento'),
     url(r'^categoria/$', CategoriaListView.as_view(), name='categoria'),
     url(r'^categoria/(?P<pk>[0-9]+)/$', CategoriaView.as_view(), name='get_categoria'),
-    url(r'^produto/$', CategoriaListView.as_view(), name='produto'),
-    url(r'^produto/(?P<pk>[0-9]+)/$', CategoriaView.as_view(), name='get_produto'),
+    url(r'^produto/$', ProdutoListView.as_view(), name='produto'),
+    url(r'^produto/(?P<pk>[0-9]+)/$', ProdutoView.as_view(), name='get_produto'),
     url(r'^pedido/$', PedidoListView.as_view(), name='pedido'),
     url(r'^pedido/(?P<pk>[0-9]+)/$', PedidoView.as_view(), name='get_pedido'),
     url(r'^itempedido/$', ItemPedidoListView.as_view(), name='itempedido'),

@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'portfolios',
+    'sistema_pedidos',
     'rest_framework',
     'corsheaders',
 )
