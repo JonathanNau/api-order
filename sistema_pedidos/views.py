@@ -1,4 +1,4 @@
-from .serializer import UsuariosSerializer, LojasSerializer, LojaUsuarioSerializer, RecebimentoSerializer, CategoriaSerializer, ProdutoSerializer, PedidoSerializer, ItemPedidoSerializer
+from .serializer import UsuariosSerializer, LojasSerializer, LojaUsuarioSerializer, RecebimentoSerializer, CategoriaSerializer, ProdutoSerializer, PedidoSerializer, ItemPedidoSerializer, new_new
 from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
 from django.contrib.auth.models import User
 from django.db.models import F
@@ -59,7 +59,7 @@ class UsuarioView(APIView):
     
     def put(self, request, pk, format=None):
         user = User.objects.get(pk=pk)
-        serializer = UsuariosSerializer(user, data=request.data)
+        serializer = UsuariosSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -94,7 +94,7 @@ class LojaView(APIView):
     
     def put(self, request, pk, format=None):
         user = Loja.objects.get(pk=pk)
-        serializer = LojasSerializer(user, data=request.data)
+        serializer = LojasSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -135,6 +135,13 @@ class LojaUsuarioView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
 
+class FuncionariosView(APIView):
+
+    def get(self, request, pk, format=None):
+        serializer = LojaUsuarioSerializer(LojaUsuario.objects.filter(loja=pk), many=True)
+        return Response(serializer.data)
+  
+
 class RecebimentoListView(APIView):
     serializer_class = RecebimentoSerializer
 
@@ -153,8 +160,8 @@ class RecebimentoListView(APIView):
 class RecebimentoView(APIView):
 
     def get(self, request, pk, format=None):
-        user = Recebimento.objects.get(pk=pk)
-        serializer = RecebimentoSerializer(user)
+        user = Recebimento.objects.filter(loja=pk)
+        serializer = RecebimentoSerializer(user, many=True)
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
@@ -220,6 +227,11 @@ class ProdutoListView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
 
+class ProdutoCategoriaView(APIView):
+    
+    def get(self, request, pk, format=None):
+        serializer = ProdutoSerializer(Produto.objects.filter(categoria=pk), many=True)
+        return Response(serializer.data)
 
 class ProdutoView(APIView):
     
@@ -312,3 +324,15 @@ class ItemPedidoView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   
+
+class new_newView(APIView):
+
+    def get(self, request, pk, format=None):
+        categoria_loja = Categoria.objects.filter(loja=pk)
+        pr = Produto.objects.filter(categoria__in=categoria_loja)
+        serializer = new_new(pr, many=True)
+       
+        #loja = Produto.objects.get(categoria.loja=pk)
+        #user = Categoria.objects.all()
+        #serializer = new_new(produtos, many=True)
+        return Response(serializer.data)
