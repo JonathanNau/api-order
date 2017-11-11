@@ -2,7 +2,7 @@
 from django.conf.urls import url
 from sistema_pedidos.views import UsuarioListView, UsuarioView, LojaUsuarioListView, RecebimentoListView, CategoriaListView, ProdutoListView, PedidoListView, ItemPedidoListView
 from sistema_pedidos.views import LojaListView, LojaView, LojaUsuarioView, RecebimentoView, CategoriaView, ProdutoView, PedidoView, ItemPedidoView, FuncionariosView, new_newView, ProdutoCategoriaView
-
+from sistema_pedidos.views import PedidoLojaView, PedidoClienteView
 from sistema_pedidos.views import UsuarioAdd
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import verify_jwt_token
@@ -27,6 +27,8 @@ helper_patterns = [
     url(r'^itempedido/$', ItemPedidoListView.as_view(), name='itempedido'),
     url(r'^itempedido/(?P<pk>[0-9]+)/$', ItemPedidoView.as_view(), name='get_itempedido'),
     url(r'^new/(?P<pk>[0-9]+)/$', new_newView.as_view(), name='get_new'),
+    url(r'^pedido-loja/(?P<pk>[0-9]+)/$', PedidoLojaView.as_view(), name='get_pedido_loja'),
+    url(r'^pedido-cliente/(?P<pk>[0-9]+)/$', PedidoClienteView.as_view(), name='get_pedido_cliente'),
     url(r'^produto-categoria/(?P<pk>[0-9]+)/$', ProdutoCategoriaView.as_view(), name='get_produto_categoria'),
     url(r'^auth/token/', obtain_jwt_token),
     url(r'^api-token-verify/', verify_jwt_token),

@@ -325,6 +325,18 @@ class ItemPedidoView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   
 
+class PedidoLojaView(APIView):
+
+    def get(self, request, pk, format=None):
+        serializer = PedidoSerializer(Pedido.objects.filter(loja=pk), many=True)
+        return Response(serializer.data)
+
+class PedidoClienteView(APIView):
+
+    def get(self, request, pk, format=None):
+        serializer = PedidoSerializer(Pedido.objects.filter(usuario=pk), many=True)
+        return Response(serializer.data)
+
 class new_newView(APIView):
 
     def get(self, request, pk, format=None):

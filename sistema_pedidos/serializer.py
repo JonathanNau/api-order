@@ -92,7 +92,7 @@ class ProdutoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produto
         depth = 1
-        fields = ['id', 'categoria', 'nome', 'valor', 'data', 'situacao', 'categoria1']
+        fields = ['id', 'categoria', 'nome', 'descricao', 'valor', 'data', 'situacao', 'foto', 'categoria1']
     
     def create(self, validated_data):
         child_data = validated_data.pop('categoria1')
@@ -108,18 +108,37 @@ class ProdutoSerializer(serializers.ModelSerializer):
         return instance
 
 class PedidoSerializer(serializers.ModelSerializer):
-
+    usuario1 = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), write_only=True)
+    loja1 = serializers.PrimaryKeyRelatedField(
+        queryset=Loja.objects.all(), write_only=True)
+    recebimento1 = serializers.PrimaryKeyRelatedField(
+        queryset=Recebimento.objects.all(), write_only=True)
     class Meta:
         model = Pedido
         depth = 1
-        fields = ['id', 'usuario', 'loja', 'recebimento', 'recebimento_valor', 'data', 'situacao']
+        fields = ['id', 'usuario', 'loja', 'recebimento', 'recebimento_valor', 'data', 'situacao', 'usuario1', 'loja1', 'recebimento1']
+
+    def create(self, validated_data):
+        child_data1 = validated_data.pop('usuario1')
+        child_data2 = validated_data.pop('loja1')
+        child_data3 = validated_data.pop('recebimento1')
+        return Pedido.objects.create(usuario=child_data1, loja=child_data2, recebimento=child_data3, **validated_data)
 
 class ItemPedidoSerializer(serializers.ModelSerializer):
-
+    produto1 = serializers.PrimaryKeyRelatedField(
+        queryset=Produto.objects.all(), write_only=True)
+    pedido1 = serializers.PrimaryKeyRelatedField(
+        queryset=Pedido.objects.all(), write_only=True)
     class Meta:
         model = ItemPedido
         depth = 1
-        fields = ['id', 'pedido', 'produto', 'valor', 'quantidade']
+        fields = ['id', 'pedido', 'produto', 'valor', 'quantidade', 'produto1', 'pedido1']
+    
+    def create(self, validated_data):
+        child_data1 = validated_data.pop('produto1')
+        child_data2 = validated_data.pop('pedido1')
+        return ItemPedido.objects.create(produto=child_data1, pedido=child_data2, **validated_data)
 
 class ProductSerializer(serializers.ModelSerializer):
     #loja = ProductVariantSerializer(source='product', many=True, read_only=True)
