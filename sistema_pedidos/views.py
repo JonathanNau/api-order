@@ -308,8 +308,9 @@ class ItemPedidoListView(APIView):
 class ItemPedidoView(APIView):
 
     def get(self, request, pk, format=None):
-        user = ItemPedido.objects.get(pk=pk)
-        serializer = ItemPedidoSerializer(user)
+        serializer = ItemPedidoSerializer(ItemPedido.objects.filter(pedido=pk), many=True)
+        #user = ItemPedido.objects.get(pedido=pk)
+        #serializer = ItemPedidoSerializer(user)
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):

@@ -6,6 +6,8 @@ from .models import DadosPessoais
 from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido, Tipo
 from django.contrib.auth.models import User
 
+from django.contrib.auth.hashers import make_password
+
 class DadosPessoaisSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -29,6 +31,7 @@ class UsuariosSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         profile_data = validated_data.pop('userprofile', None)
+        validated_data['password'] = make_password(validated_data['password'])
         user = super(UsuariosSerializer, self).create(validated_data)
         self.update_or_create_profile(user, profile_data)
         return user
