@@ -6,7 +6,56 @@ from .models import DadosPessoais
 from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido, Tipo
 from django.contrib.auth.models import User
 
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, is_password_usable
+
+class Base64ImageField(serializers.ImageField):
+    """
+    A Django REST framework field for handling image-uploads through raw post data.
+    It uses base64 for encoding and decoding the contents of the file.
+
+    Heavily based on
+    https://github.com/tomchristie/django-rest-framework/pull/1268
+
+    Updated for Django REST framework 3.
+    """
+
+    def to_internal_value(self, data):
+        from django.core.files.base import ContentFile
+        import base64
+        import six
+        import uuid
+
+        # Check if this is a base64 string
+        if isinstance(data, six.string_types):
+            # Check if the base64 string is in the "data:" format
+            if 'data:' in data and ';base64,' in data:
+                # Break out the header from the base64 content
+                header, data = data.split(';base64,')
+
+            # Try to decode the file. Return validation error if it fails.
+            try:
+                decoded_file = base64.b64decode(data)
+            except TypeError:
+                self.fail('invalid_image')
+
+            # Generate file name:
+            file_name = str(uuid.uuid4())[:12] # 12 characters are more than enough.
+            # Get the file name extension:
+            file_extension = self.get_file_extension(file_name, decoded_file)
+
+            complete_file_name = "%s.%s" % (file_name, file_extension, )
+
+            data = ContentFile(decoded_file, name=complete_file_name)
+
+        return super(Base64ImageField, self).to_internal_value(data)
+
+    def get_file_extension(self, file_name, decoded_file):
+        import imghdr
+
+        extension = imghdr.what(file_name, decoded_file)
+        extension = "jpg" if extension == "jpeg" else extension
+
+        return extension
 
 class DadosPessoaisSerializer(serializers.ModelSerializer):
 
@@ -27,7 +76,7 @@ class UsuariosSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         depth = 1
-        fields = ['id', 'username', 'email', 'password', 'is_active', 'codigo']
+        fields = ['id', 'username', 'first_name', 'email', 'password', 'is_active', 'codigo']
     
     def create(self, validated_data):
         profile_data = validated_data.pop('userprofile', None)
@@ -38,6 +87,10 @@ class UsuariosSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('userprofile', None)
+        if is_password_usable(validated_data['password']):
+            pass
+        else: 
+            validated_data['password'] = make_password(validated_data['password'])
         self.update_or_create_profile(instance, profile_data)
         return super(UsuariosSerializer, self).update(instance, validated_data)
 
@@ -91,6 +144,9 @@ class CategoriaSerializer(serializers.ModelSerializer):
 class ProdutoSerializer(serializers.ModelSerializer):
     categoria1 = serializers.PrimaryKeyRelatedField(
         queryset=Categoria.objects.all(), write_only=True)
+    foto = Base64ImageField(
+        max_length=None, use_url=True,
+    )
     #categoria = CategoriaSerializer()
     class Meta:
         model = Produto
@@ -104,7 +160,9 @@ class ProdutoSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.categoria = validated_data.pop('categoria1')
         instance.nome = validated_data.pop('nome')
+        instance.descricao = validated_data.pop('descricao')
         instance.valor = validated_data.pop('valor')
+        instance.foto = validated_data.pop('foto')
         instance.situacao = validated_data.pop('situacao')
         # ... plus any other fields you may want to update
         instance.save()
@@ -143,6 +201,28 @@ class ItemPedidoSerializer(serializers.ModelSerializer):
         child_data2 = validated_data.pop('pedido1')
         return ItemPedido.objects.create(produto=child_data1, pedido=child_data2, **validated_data)
 
+class ItemPedidoSerializer2(serializers.ModelSerializer):
+    produto = serializers.PrimaryKeyRelatedField(
+        queryset=Produto.objects.all(), write_only=True)
+    pedido = serializers.PrimaryKeyRelatedField(
+        queryset=Pedido.objects.all(), write_only=True)
+    class Meta:
+        model = ItemPedido
+        depth = 1
+        fields = ['id', 'pedido', 'produto', 'valor', 'quantidade']
+    '''
+    def create(self, request, *args, **kwargs):
+        data = request.data.get("produtos") if 'produtos' in request.data else request.data
+        many = isinstance(data, list)
+        print (data, many)
+        serializer = self.get_serializer(data=data, many=many)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    '''
+
+
 class ProductSerializer(serializers.ModelSerializer):
     #loja = ProductVariantSerializer(source='product', many=True, read_only=True)
     class Meta:
@@ -160,3 +240,4 @@ class new_new(serializers.ModelSerializer):
     class Meta:
         model = Produto
         fields = ('id', 'nome', 'categoria')
+

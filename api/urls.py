@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.conf.urls import url
-from sistema_pedidos.views import UsuarioListView, UsuarioView, LojaUsuarioListView, RecebimentoListView, CategoriaListView, ProdutoListView, PedidoListView, ItemPedidoListView
+from sistema_pedidos.views import UsuarioListView, UsuarioView, LojaUsuarioListView, RecebimentoListView, CategoriaListView, ProdutoListView, PedidoListView, ItemPedidoListView, ItemPedidoListView2
 from sistema_pedidos.views import LojaListView, LojaView, LojaUsuarioView, RecebimentoView, CategoriaView, ProdutoView, PedidoView, ItemPedidoView, FuncionariosView, new_newView, ProdutoCategoriaView
 from sistema_pedidos.views import PedidoLojaView, PedidoClienteView
 from sistema_pedidos.views import UsuarioAdd
@@ -25,6 +25,7 @@ helper_patterns = [
     url(r'^pedido/$', PedidoListView.as_view(), name='pedido'),
     url(r'^pedido/(?P<pk>[0-9]+)/$', PedidoView.as_view(), name='get_pedido'),
     url(r'^itempedido/$', ItemPedidoListView.as_view(), name='itempedido'),
+    url(r'^itempedido2/$', ItemPedidoListView2.as_view(), name='itempedido2'),
     url(r'^itempedido/(?P<pk>[0-9]+)/$', ItemPedidoView.as_view(), name='get_itempedido'),
     url(r'^new/(?P<pk>[0-9]+)/$', new_newView.as_view(), name='get_new'),
     url(r'^pedido-loja/(?P<pk>[0-9]+)/$', PedidoLojaView.as_view(), name='get_pedido_loja'),

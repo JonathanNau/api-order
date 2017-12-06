@@ -1,4 +1,4 @@
-from .serializer import UsuariosSerializer, LojasSerializer, LojaUsuarioSerializer, RecebimentoSerializer, CategoriaSerializer, ProdutoSerializer, PedidoSerializer, ItemPedidoSerializer, new_new
+from .serializer import UsuariosSerializer, LojasSerializer, LojaUsuarioSerializer, RecebimentoSerializer, CategoriaSerializer, ProdutoSerializer, PedidoSerializer, ItemPedidoSerializer, ItemPedidoSerializer2, new_new
 from .models import Loja, LojaUsuario, Recebimento, Categoria, Produto, Pedido, ItemPedido
 from django.contrib.auth.models import User
 from django.db.models import F
@@ -303,6 +303,20 @@ class ItemPedidoListView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
+
+
+class ItemPedidoListView2(APIView):
+    serializer_class = ItemPedidoSerializer2
+
+    def post(self, request, format=None):
+        for elem in request.data.get("produtos"):
+            print(elem)
+            serializer = self.serializer_class(data=elem)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class ItemPedidoView(APIView):

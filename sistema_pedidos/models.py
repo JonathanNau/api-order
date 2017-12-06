@@ -3,8 +3,13 @@ from django.db import models
 from django.forms import ModelForm, PasswordInput
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
 import uuid
 import os
+from django.contrib.auth.models import User
+User._meta.get_field('email')._unique = True
+User._meta.get_field('email').required = True
 def get_file_path(instance, filename):
   ext = filename.split(".")[-1]
   filename = "%s.%s" % (uuid.uuid4(), ext)
@@ -14,6 +19,18 @@ def get_file_path_loja(instance, filename):
   ext = filename.split(".")[-1]
   filename = "%s.%s" % (uuid.uuid4(), ext)
   return os.path.join("lojas", filename)
+
+class EmailBackend(ModelBackend):
+    def authenticate(self, username=None, password=None, **kwargs):
+        #UserModel = get_user_model()
+        try:
+            user = User.objects.get(email=username)
+        except User.DoesNotExist:
+            return None
+        else:
+            if user.check_password(password):
+                return user
+        return None
 
 class Tipo(models.Model):
     user = models.OneToOneField(User, related_name='userprofile', on_delete=models.CASCADE)
